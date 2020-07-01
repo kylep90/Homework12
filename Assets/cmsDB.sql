@@ -40,7 +40,13 @@ VALUES ("Kyle", "Pingue");
 select employee.id, first_name, last_name, title, department.name, salary
 from employee 
 inner join role on employee.id = role.id
-inner join department on department.id = role.id
+inner join department on department.id = role.id;
+
+set SQL_SAFE_UPDATES = 0;
+
+update employee
+SET first_name = "Kylie"
+WHERE first_name = "Kyle"
 
 
 
