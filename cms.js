@@ -148,7 +148,7 @@ function addEmployee(){
         }
 
         setRole(newEmployee, response.employeeDept);
-        initalise();
+        // initalise();
     })
     // initalise();
 }
@@ -165,7 +165,7 @@ function setRole(newEmployee, dept){
 
     //Defines the Role
     switch(dept){
-
+        
         //Engineering Dept
         case("Engineering"):
         //Set department to Engineering
@@ -198,15 +198,14 @@ function setRole(newEmployee, dept){
                 Values ("Software Engineer", "120000")`, (err, data) =>{
                     if (err) throw err;
                                     });
-                break;
-                default:
-                break;
+                break;  
                 }
-                
+                initalise();
             }
+            
         ); 
         break;
-        return;
+
         
         
         //Define Sales roles
@@ -241,19 +240,14 @@ function setRole(newEmployee, dept){
                     if (err) throw err;
                                     });
                 break;
-                default:
-                    break;
+            
                 }
-        
+                initalise();
             })
-         break;
-
-         default:
-         break;
-         return;
+            break;
+            
      }
-
-
+    // initalise(); - DOES NOT WORK!
 }
  
 //Function to UPDATE a current EMPLOYEE
