@@ -78,7 +78,18 @@ function viewDepts(){
 
     connection.query("SELECT * FROM department", (err, data) =>{
         if (err) throw err;
-        console.table(data)
+        var diffDept = data[0].name
+        var deptArray = [diffDept]
+        
+        for(var i=0; i<data.length; i++){
+            if(diffDept !== data[i].name){
+                deptArray.push(data[i].name)
+            }    
+        }
+        for(var i=0; i<deptArray.length; i++){
+            console.table(deptArray[i]);
+        }
+        // console.table(data)
         initalise();
         // connection.end
     })
@@ -118,81 +129,165 @@ function addEmployee(){
         {
             type: "input",
             name: "lastName",
-            message: "What is the employees first name?"
+            message: "What is the employees last name?"
         },
         {
-            type: "input",
+            type: "list",
             name: "employeeDept",
-            message: "What department is the employee apart of?"
-        },
-        {
-            type: "input",
-            name: "employeeTitle",
-            message: "What is the employees title?"
-        },
-        {
-            type: "input",
-            name: "employeeSalary",
-            message: "What is the employees salary?"
-        },
-
+            message: "What department is the employee apart of?",
+            choices: ["Engineering",
+                    "Sales",
+                    "Finance",
+                    "Legal"]
+        }
     ]).then(response =>{
         var newEmployee = {
         firstName: response.firstName,
         lastName: response.lastName,
         employeeDept: response.employeeDept,
-        employeeTitle: response.employeeTitle,
-        employeeSalary: response.employeeSalary
         }
-        console.log(newEmployee);
-        renderEmployee(newEmployee);
+
+        setRole(newEmployee, response.employeeDept);
+        initalise();
     })
+    // initalise();
 }
 
-//Function to RENDER the new EMPLOYEE
-function renderEmployee(newEmployee){
-    console.log("Updating Employee",newEmployee);
-    // console.log("Updating Employee Parse:",parse(newEmployee));
-    console.log(newEmployee.employeeDept);
-    connection.query(`INSERT INTO department(name) 
-                        Values ('${newEmployee.employeeDept}')`, (err, data) =>{
-        if (err) throw err;
-                        })
-        // console.table(data)
-        // initalise();
-        // connection.end;
-    connection.query(`INSERT INTO role(title, salary) 
-                        Values ('${newEmployee.employeeTitle}', '${newEmployee.employeeSalary}')`, (err, data) =>{
-        if (err) throw err;
-                        })
+function setRole(newEmployee, dept){
+
+    //Adds full name
     connection.query(`INSERT INTO employee(first_name, last_name) 
-        Values ('${newEmployee.firstName}', '${newEmployee.lastName}')`, (err, data) =>{
-        if (err) throw err;
+    
+    Values ('${newEmployee.firstName}', '${newEmployee.lastName}')`, (err, data) =>{
+    if (err) throw err;
+
+    })
+
+    //Defines the Role
+    switch(dept){
+
+        //Engineering Dept
+        case("Engineering"):
+        //Set department to Engineering
+        connection.query(`INSERT INTO department(name) 
+        Values ("Engineering")`, (err, data) =>{
+            if (err) throw err;                   
+        })
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "engineeringRoles",
+                message: "What Engineering role?",
+                choices: ["Lead Engineer", "Software Engineer"]
+            }
+        ]).then(response =>{
+            switch(response.engineeringRoles){
+                case("Lead Engineer"):
+                newEmployee.employeeTitle = response.engineeringRoles;
+                newEmployee.employeeSalary = 150000;
+                connection.query(`INSERT INTO role(title, salary) 
+                Values ("Lead Engineer", "150000")`, (err, data) =>{
+                    if (err) throw err;
+                                    });
+                break;
+
+                case("Software Engineer"):
+                employeeTitle= response.engineeringRoles;
+                employeeSalary = 150000;
+                connection.query(`INSERT INTO role(title, salary) 
+                Values ("Software Engineer", "120000")`, (err, data) =>{
+                    if (err) throw err;
+                                    });
+                break;
+                default:
+                break;
+                }
+                
+            }
+        ); 
+        break;
+        return;
         
+        
+        //Define Sales roles
+        case("Sales"):
+        connection.query(`INSERT INTO department(name) 
+        Values ("Sales")`, (err, data) =>{
+            if (err) throw err;
+                            });
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "salesRoles",
+                message: "What Sales role?",
+                choices: ["Sales Lead", "Salesperson"]
+            }
+        ]).then(response =>{
+            switch(response.salesRoles){
+                case("Sales Lead"):
+                newEmployee.employeeTitle = response.salesRoles;
+                newEmployee.employeeSalary = 100000;
+                connection.query(`INSERT INTO role(title, salary) 
+                Values ("Sales Lead", "100000")`, (err, data) =>{
+                    if (err) throw err;
+                                    });
+                break;
+                
+                case("Salesperson"):
+                employeeTitle= response.salesRoles;
+                employeeSalary = 80000;
+                connection.query(`INSERT INTO role(title, salary) 
+                Values ("Salesperson", "80000")`, (err, data) =>{
+                    if (err) throw err;
+                                    });
+                break;
+                default:
+                    break;
+                }
+        
+            })
+         break;
 
-})
-initalise();
+         default:
+         break;
+         return;
+     }
+
+
 }
-
+ 
 //Function to UPDATE a current EMPLOYEE
-var array = ["Mark", "John", "Peter", "Paul"]
+// var array = ["Mark", "John", "Peter", "Paul"]
+var array = [];
 
 function updateEmployee(array){
 
 var chosenName;
-    console.log("Array is", array)     //To see if the array passed
+    // console.log("Array is", array)     //To see if the array passed
     getEmployee(array)
     //Function to get the list of names
     function getEmployee(){
-        var employeeNames = connection.query(`SELECT first_name, last_name, employee.id  FROM employee`, (err, data) =>{
+        var employeeNames = connection.query(`SELECT employee.id, first_name, last_name FROM employee`, (err, data) =>{
             if (err) throw err;
-            console.log(data);
+            for(i=0; i < data.length; i++){
+                var fullname = `${data[i].first_name} ${data[i].last_name}`
+                array.push(fullname)
+            }
+            // console.log("Data", data);
+            // console.log("Data Length", data.length);
+            // console.log("Full Names", array)
             inquirer.prompt([           //To see if the array passed
         {
             type:"list",
             name:"employeeUpdateChoice",
             message: "Which employee would you like to update?",
-            choices: []     
+            choices: array   
+        },
+        {
+            type:"list",
+            name:"employeeUpdateRole",
+            message: "What department would you now like to select?",
+            choices:  []
         }
     ]).then(response =>{
         console.log("Print name",response.employeeUpdateChoice)
@@ -208,13 +303,6 @@ var chosenName;
 
     
 }
-//     connection.query(`update employee
-//                     SET first_name = "Kyle"
-//                     WHERE first_name = ${response.employeeUpdateChoice}`, (err, data) =>{
-//                     if (err) throw err;
-//                     initalise();
-//                     connection.end;
-// }
 
 }
 
