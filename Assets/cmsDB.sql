@@ -28,6 +28,13 @@ CREATE TABLE employee(
 INSERT INTO department(name)
 Values ("Engineering");
 
+INSERT INTO department(name)
+VALUES ("Sales");
+
+INSERT INTO department(name)
+VALUES ("Legal");
+
+
 INSERT INTO role (title, salary /*department_id*/)
 VALUES ("Lead Engineer", "50000");
 

@@ -69,7 +69,7 @@ function viewAll(){
         if (err) throw err;
         console.table(data)
         initalise();
-        connection.end
+        // connection.end
     })
 }
 
@@ -79,24 +79,15 @@ function viewDepts(){
     connection.query("SELECT * FROM department", (err, data) =>{
         if (err) throw err;
 
-        
-        var deptArray = [data[0].name];
-
-        console.log("Data", data);
-        for(var i = 0; i<data.length; i++){
-            
-            if (deptArray.indexOf(data[i].name)> -1) {
-                console.log(data[i].name, " is already here");
-                
-            }
-            else{
-                console.log(data[i].name, "is NOT already here")
-                deptArray.push(data[i].name)
-            }
-            
+        if(data.length >= 0){
+      
+           console.table(data); 
+        }
+        else{
+            console.log("There aren't any departments")
         }
 
-        console.table(deptArray);
+        
 
         initalise();
         
@@ -106,30 +97,21 @@ function viewDepts(){
 //Function to view only the ROLES
 function viewRoles(){
 
-    connection.query("SELECT * FROM role", (err, data) =>{
+    connection.query("SELECT id, title FROM role ", (err, data) =>{
         if (err) throw err;
 
-        
-        var rolesArray = [data[0].title];
-
-        console.log("Data", data);
-        for(var i = 0; i<data.length; i++){
-            
-            if (rolesArray.indexOf(data[i].title)> -1) {
-                console.log(data[i].title, " is already here");
-                
-            }
-            else{
-                console.log(data[i].title, "is NOT already here")
-                rolesArray.push(data[i].title)
-            }
-            
+        if(data.length >= 0){
+      
+           console.table(data); 
+        }
+        else{
+            console.log("There aren't any roles")
         }
 
-        console.table(rolesArray);
+        
 
         initalise();
-        connection.end
+        
     })
 };
 
@@ -174,32 +156,20 @@ function addEmployee(){
         employeeDept: response.employeeDept,
         }
 
-        setRole(newEmployee, response.employeeDept);
+        setRole(newEmployee);
         // initalise();
     })
     // initalise();
 }
 
-function setRole(newEmployee, dept){
-
-    //Adds full name
-    connection.query(`INSERT INTO employee(first_name, last_name) 
-    
-    Values ('${newEmployee.firstName}', '${newEmployee.lastName}')`, (err, data) =>{
-    if (err) throw err;
-
-    })
+function setRole(newEmployee){
 
     //Defines the Role
-    switch(dept){
+   switch(newEmployee.employeeDept){
         
         //Engineering Dept
         case("Engineering"):
         //Set department to Engineering
-        connection.query(`INSERT INTO department(name) 
-        Values ("Engineering")`, (err, data) =>{
-            if (err) throw err;                   
-        })
         inquirer.prompt([
             {
                 type: "list",
@@ -212,22 +182,20 @@ function setRole(newEmployee, dept){
                 case("Lead Engineer"):
                 newEmployee.employeeTitle = response.engineeringRoles;
                 newEmployee.employeeSalary = 150000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Lead Engineer", "150000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
 
                 case("Software Engineer"):
                 employeeTitle= response.engineeringRoles;
                 employeeSalary = 150000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Software Engineer", "120000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;  
                 }
-                initalise();
+                // initalise();
+                console.log("ENG NEW EMPLOYEE: ", newEmployee)
+                connection.query(`INSERT INTO employee (first_name, last_name) 
+                                VALUES ("${newEmployee.firstName}", "${newEmployee.lastName}")`, (err, data) =>{
+                                    if (err) throw err;
+                                    initalise();
+                                })
             }
             
         ); 
@@ -237,10 +205,6 @@ function setRole(newEmployee, dept){
         
         //Define Sales roles
         case("Sales"):
-        connection.query(`INSERT INTO department(name) 
-        Values ("Sales")`, (err, data) =>{
-            if (err) throw err;
-                            });
         inquirer.prompt([
             {
                 type: "list",
@@ -253,32 +217,20 @@ function setRole(newEmployee, dept){
                 case("Sales Lead"):
                 newEmployee.employeeTitle = response.salesRoles;
                 newEmployee.employeeSalary = 100000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Sales Lead", "100000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
                 
                 case("Salesperson"):
                 employeeTitle= response.salesRoles;
                 employeeSalary = 80000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Salesperson", "80000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
             
                 }
-                initalise();
+                // initalise();
             })
             break;
 
         //Define Finance roles
         case("Finance"):
-        connection.query(`INSERT INTO department(name) 
-        Values ("Finance")`, (err, data) =>{
-            if (err) throw err;
-                            });
         inquirer.prompt([
             {
                 type: "list",
@@ -291,32 +243,20 @@ function setRole(newEmployee, dept){
                 case("Finance Lead"):
                 newEmployee.employeeTitle = response.financeRoles;
                 newEmployee.employeeSalary = 145000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Finance Lead", "145000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
                 
                 case("Accountant"):
                 employeeTitle= response.financeRoles;
                 employeeSalary = 125000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Accountant", "125000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
             
                 }
-                initalise();
+                // initalise();
             })
             break;
 
         //Define Legal roles
         case("Legal"):
-        connection.query(`INSERT INTO department(name) 
-        Values ("Legal")`, (err, data) =>{
-            if (err) throw err;
-                            });
         inquirer.prompt([
             {
                 type: "list",
@@ -329,27 +269,21 @@ function setRole(newEmployee, dept){
                 case("Legal Team Lead"):
                 newEmployee.employeeTitle = response.legalRoles;
                 newEmployee.employeeSalary = 250000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Legal Team Lead", "250000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
                 
                 case("Lawyer"):
                 employeeTitle= response.legalRoles;
                 employeeSalary = 190000;
-                connection.query(`INSERT INTO role(title, salary) 
-                Values ("Lawyer", "190000")`, (err, data) =>{
-                    if (err) throw err;
-                                    });
                 break;
             
                 }
-                initalise();
+                // initalise();
             })
             break;
             
-     }//End of Switch(dept)
+     }//End of Switch(dept)    
+
+
 } //End of Function
  
 //Function to UPDATE a current EMPLOYEE
